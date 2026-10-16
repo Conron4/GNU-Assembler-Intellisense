@@ -4,7 +4,7 @@
   "description": "Syntax highlighting, IntelliSense, diagnostics, formatting, navigation and build tools for GNU as (GAS) x86-64 assembly.",
   "version": "1.0.1",
   "icon": "images/gas.png",
-  "publisher": "Connor Hopley",
+  "publisher": "connorh",
   "repository": {
     "type": "git",
     "url": "https://github.com/Conron4/GNU-Assembler-Intellisense"
