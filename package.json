@@ -2,7 +2,8 @@
   "name": "gnu-as-x86-64",
   "displayName": "GNU Assembler (x86-64, AT&T)",
   "description": "Syntax highlighting, IntelliSense, diagnostics, formatting, navigation and build tools for GNU as (GAS) x86-64 assembly.",
-  "version": "1.0.0",
+  "version": "1.0.1",
+  "icon": "images/gas.png",
   "publisher": "gas-tools",
   "license": "MIT",
   "engines": {
