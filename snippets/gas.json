@@ -1,0 +1,226 @@
+{
+  "Hello world (Linux x86-64)": {
+    "prefix": ["hello", "helloworld"],
+    "description": "Complete Linux x86-64 program that writes a string and exits",
+    "body": [
+      "    .section .rodata",
+      "msg:",
+      "    .ascii \"${1:Hello, world!}\\n\"",
+      ".set msg_len, . - msg",
+      "",
+      "    .text",
+      "    .globl _start",
+      "    .type _start, @function",
+      "_start:",
+      "    mov     \\$1, %eax              # sys_write",
+      "    mov     \\$1, %edi              # fd = stdout",
+      "    lea     msg(%rip), %rsi",
+      "    mov     \\$msg_len, %edx",
+      "    syscall",
+      "",
+      "    mov     \\$60, %eax             # sys_exit",
+      "    xor     %edi, %edi             # status = 0",
+      "    syscall",
+      "    .size _start, .-_start",
+      "",
+      "    .section .note.GNU-stack,\"\",@progbits"
+    ]
+  },
+  "Function (System V ABI)": {
+    "prefix": ["func", "function"],
+    "description": "Function with standard prologue/epilogue and CFI",
+    "body": [
+      "    .globl ${1:name}",
+      "    .type ${1:name}, @function",
+      "${1:name}:",
+      "    .cfi_startproc",
+      "    push    %rbp",
+      "    .cfi_def_cfa_offset 16",
+      "    .cfi_offset %rbp, -16",
+      "    mov     %rsp, %rbp",
+      "    .cfi_def_cfa_register %rbp",
+      "    ${0:# body}",
+      "    pop     %rbp",
+      "    .cfi_def_cfa %rsp, 8",
+      "    ret",
+      "    .cfi_endproc",
+      "    .size ${1:name}, .-${1:name}"
+    ]
+  },
+  "Leaf function (no frame)": {
+    "prefix": ["leaf"],
+    "description": "Minimal function without a stack frame",
+    "body": [
+      "    .globl ${1:name}",
+      "    .type ${1:name}, @function",
+      "${1:name}:",
+      "    ${0:# body}",
+      "    ret",
+      "    .size ${1:name}, .-${1:name}"
+    ]
+  },
+  "Prologue": {
+    "prefix": ["prologue"],
+    "description": "Frame-pointer prologue",
+    "body": ["push    %rbp", "mov     %rsp, %rbp", "sub     \\$${1:16}, %rsp"]
+  },
+  "Epilogue": {
+    "prefix": ["epilogue"],
+    "description": "Frame-pointer epilogue",
+    "body": ["leave", "ret"]
+  },
+  "_start entry point": {
+    "prefix": ["_start", "start"],
+    "description": "Program entry point for ld",
+    "body": [
+      "    .globl _start",
+      "_start:",
+      "    ${0:# code}",
+      "    mov     \\$60, %eax",
+      "    xor     %edi, %edi",
+      "    syscall"
+    ]
+  },
+  "main (libc)": {
+    "prefix": ["main"],
+    "description": "main() for programs linked with libc (gcc)",
+    "body": [
+      "    .globl main",
+      "    .type main, @function",
+      "main:",
+      "    push    %rbp",
+      "    mov     %rsp, %rbp",
+      "    ${0:# body}",
+      "    xor     %eax, %eax",
+      "    pop     %rbp",
+      "    ret",
+      "    .size main, .-main",
+      "",
+      "    .section .note.GNU-stack,\"\",@progbits"
+    ]
+  },
+  "printf call": {
+    "prefix": ["printf"],
+    "description": "Call printf (stack must be 16-byte aligned; %al = number of vector args)",
+    "body": [
+      "lea     ${1:fmt}(%rip), %rdi",
+      "mov     ${2:\\$0}, %esi",
+      "xor     %eax, %eax",
+      "call    printf@PLT"
+    ]
+  },
+  "write syscall": {
+    "prefix": ["sys_write", "write"],
+    "description": "write(fd, buf, count)",
+    "body": ["mov     \\$1, %eax        # sys_write", "mov     \\$${1:1}, %edi        # fd", "lea     ${2:buf}(%rip), %rsi", "mov     \\$${3:len}, %edx", "syscall"]
+  },
+  "read syscall": {
+    "prefix": ["sys_read", "read"],
+    "description": "read(fd, buf, count)",
+    "body": ["xor     %eax, %eax       # sys_read", "mov     \\$${1:0}, %edi        # fd", "lea     ${2:buf}(%rip), %rsi", "mov     \\$${3:len}, %edx", "syscall"]
+  },
+  "exit syscall": {
+    "prefix": ["sys_exit", "exit"],
+    "description": "exit(status)",
+    "body": ["mov     \\$60, %eax       # sys_exit", "mov     \\$${1:0}, %edi", "syscall"]
+  },
+  "String constant": {
+    "prefix": ["str", "asciz"],
+    "description": "NUL-terminated string in .rodata",
+    "body": ["    .section .rodata", "${1:str}:", "    .asciz \"${2:text}\"", "    .text"]
+  },
+  "Data variable": {
+    "prefix": ["var", "quadvar"],
+    "description": "Initialised 64-bit variable in .data",
+    "body": ["    .data", "    .align 8", "${1:var}:", "    .quad ${2:0}", "    .text"]
+  },
+  "BSS buffer": {
+    "prefix": ["bss", "buffer"],
+    "description": "Zero-initialised buffer in .bss",
+    "body": ["    .bss", "    .align 16", "${1:buf}:", "    .zero ${2:4096}", "    .text"]
+  },
+  "Macro": {
+    "prefix": ["macro"],
+    "description": ".macro definition",
+    "body": ["    .macro ${1:name} ${2:arg}", "    ${0:# use \\\\${2:arg}}", "    .endm"]
+  },
+  "Conditional (.if)": {
+    "prefix": ["ifdef", ".if"],
+    "description": ".ifdef / .else / .endif block",
+    "body": ["    .ifdef ${1:SYMBOL}", "    ${2}", "    .else", "    ${3}", "    .endif"]
+  },
+  "Repeat (.rept)": {
+    "prefix": ["rept"],
+    "description": ".rept block",
+    "body": ["    .rept ${1:4}", "    ${0:nop}", "    .endr"]
+  },
+  "Counted loop": {
+    "prefix": ["loop", "for"],
+    "description": "Loop using a numeric local label",
+    "body": ["    mov     \\$${1:10}, %ecx", "1:", "    ${0:# body}", "    dec     %ecx", "    jnz     1b"]
+  },
+  "If / else (cmp + jcc)": {
+    "prefix": ["ifelse"],
+    "description": "Compare and branch with local labels",
+    "body": [
+      "    cmp     ${1:%rbx}, ${2:%rax}",
+      "    j${3|e,ne,l,le,g,ge,b,be,a,ae|} 1f",
+      "    ${4:# then}",
+      "    jmp     2f",
+      "1:",
+      "    ${0:# else}",
+      "2:"
+    ]
+  },
+  "Jump table switch": {
+    "prefix": ["switch"],
+    "description": "Bounds-checked jump table",
+    "body": [
+      "    cmp     \\$${1:3}, %edi",
+      "    ja      ${2:.Ldefault}",
+      "    lea     ${3:.Ltable}(%rip), %rdx",
+      "    movslq  (%rdx,%rdi,4), %rax",
+      "    add     %rdx, %rax",
+      "    jmp     *%rax",
+      "    .section .rodata",
+      "${3:.Ltable}:",
+      "    .long ${4:.Lcase0} - ${3:.Ltable}",
+      "    .text"
+    ]
+  },
+  "memcpy (rep movsb)": {
+    "prefix": ["repmovs", "memcpy"],
+    "description": "Copy %rcx bytes from (%rsi) to (%rdi)",
+    "body": ["cld", "rep movsb"]
+  },
+  "strlen (repne scasb)": {
+    "prefix": ["strlen"],
+    "description": "Length of the string at (%rdi) into %rax",
+    "body": ["xor     %eax, %eax", "mov     \\$-1, %rcx", "repne scasb", "not     %rcx", "lea     -1(%rcx), %rax"]
+  },
+  "Align": {
+    "prefix": ["align", "p2align"],
+    "description": "Align the location counter to a power of two",
+    "body": ["    .p2align ${1:4}"]
+  },
+  "Intel syntax block": {
+    "prefix": ["intel"],
+    "description": "Switch to Intel syntax for a region",
+    "body": ["    .intel_syntax noprefix", "    ${0}", "    .att_syntax prefix"]
+  },
+  "Section": {
+    "prefix": ["section"],
+    "description": ".section with flags",
+    "body": ["    .section ${1:.rodata}${2:,\"a\"}${3:,@progbits}"]
+  },
+  "Non-executable stack note": {
+    "prefix": ["noexecstack", "gnustack"],
+    "description": "Tell the linker the stack need not be executable",
+    "body": ["    .section .note.GNU-stack,\"\",@progbits"]
+  },
+  "Header comment": {
+    "prefix": ["header"],
+    "description": "File header comment",
+    "body": ["# ${1:file.s} — ${2:description}", "#", "# Build:  as --64 -o ${1/(.*)\\.s/$1/}.o ${1:file.s} && ld -o ${1/(.*)\\.s/$1/} ${1/(.*)\\.s/$1/}.o", "# Run:    ./${1/(.*)\\.s/$1/}"]
+  }
+}

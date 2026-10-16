@@ -1,0 +1,38 @@
+{
+  "comments": {
+    "lineComment": "#",
+    "blockComment": ["/*", "*/"]
+  },
+  "brackets": [
+    ["(", ")"],
+    ["[", "]"],
+    ["{", "}"]
+  ],
+  "autoClosingPairs": [
+    { "open": "(", "close": ")" },
+    { "open": "[", "close": "]" },
+    { "open": "{", "close": "}" },
+    { "open": "\"", "close": "\"", "notIn": ["string", "comment"] },
+    { "open": "/*", "close": " */", "notIn": ["string"] }
+  ],
+  "surroundingPairs": [
+    ["(", ")"],
+    ["[", "]"],
+    ["{", "}"],
+    ["\"", "\""],
+    ["'", "'"]
+  ],
+  "autoCloseBefore": ";:.,=}])> \n\t",
+  "wordPattern": "(%?[A-Za-z_.$][\\w.$]*)|(-?\\d[\\w.]*)",
+  "indentationRules": {
+    "increaseIndentPattern": "^\\s*\\.(macro|rept|irp|irpc|if[a-z]*|else|elseif|struct)\\b",
+    "decreaseIndentPattern": "^\\s*\\.(endm|endr|endif|else|elseif)\\b"
+  },
+  "onEnterRules": [
+    {
+      "beforeText": "^\\s*/\\*(?!.*\\*/).*$",
+      "afterText": "^\\s*\\*/$",
+      "action": { "indent": "indentOutdent", "appendText": " * " }
+    }
+  ]
+}

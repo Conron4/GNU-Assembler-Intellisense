@@ -1,0 +1,367 @@
+{
+  "name": "gnu-as-x86-64",
+  "displayName": "GNU Assembler (x86-64, AT&T)",
+  "description": "Syntax highlighting, IntelliSense, diagnostics, formatting, navigation and build tools for GNU as (GAS) x86-64 assembly.",
+  "version": "1.0.0",
+  "publisher": "gas-tools",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Snippets",
+    "Linters",
+    "Formatters"
+  ],
+  "keywords": [
+    "assembly",
+    "asm",
+    "gas",
+    "gnu as",
+    "x86-64",
+    "amd64",
+    "at&t",
+    "intel syntax",
+    "intellisense"
+  ],
+  "main": "./src/extension.js",
+  "scripts": {
+    "test": "node test/run.js",
+    "package": "npx @vscode/vsce package"
+  },
+  "contributes": {
+    "languages": [
+      {
+        "id": "gas",
+        "aliases": [
+          "GNU Assembler (x86-64)",
+          "GAS",
+          "AT&T Assembly"
+        ],
+        "extensions": [
+          ".s",
+          ".S",
+          ".gas",
+          ".att"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "gas",
+        "scopeName": "source.asm.gas-x86-64",
+        "path": "./syntaxes/gas.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "gas",
+        "path": "./snippets/gas.json"
+      }
+    ],
+    "configurationDefaults": {
+      "[gas]": {
+        "editor.semanticHighlighting.enabled": true,
+        "editor.insertSpaces": true,
+        "editor.tabSize": 4,
+        "editor.detectIndentation": false,
+        "editor.wordBasedSuggestions": "off",
+        "editor.quickSuggestions": {
+          "other": true,
+          "comments": false,
+          "strings": false
+        }
+      }
+    },
+    "semanticTokenScopes": [
+      {
+        "language": "gas",
+        "scopes": {
+          "function": [
+            "entity.name.function.gas"
+          ],
+          "macro": [
+            "entity.name.function.preprocessor.gas"
+          ],
+          "label": [
+            "entity.name.label.gas"
+          ],
+          "enumMember": [
+            "variable.other.constant.gas"
+          ],
+          "variable": [
+            "variable.other.symbol.gas"
+          ]
+        }
+      }
+    ],
+    "commands": [
+      {
+        "command": "gas.assemble",
+        "title": "Assemble Current File (as)",
+        "category": "GAS"
+      },
+      {
+        "command": "gas.build",
+        "title": "Assemble and Link (as + ld)",
+        "category": "GAS"
+      },
+      {
+        "command": "gas.run",
+        "title": "Build and Run in Terminal",
+        "category": "GAS"
+      },
+      {
+        "command": "gas.disassemble",
+        "title": "Show Disassembly (objdump)",
+        "category": "GAS"
+      },
+      {
+        "command": "gas.lookupInstruction",
+        "title": "Look Up Instruction or Directive\u2026",
+        "category": "GAS"
+      },
+      {
+        "command": "gas.insertSyscall",
+        "title": "Insert Linux x86-64 System Call\u2026",
+        "category": "GAS"
+      },
+      {
+        "command": "gas.lintNow",
+        "title": "Run Assembler Diagnostics Now",
+        "category": "GAS"
+      },
+      {
+        "command": "gas.reindexWorkspace",
+        "title": "Rebuild Workspace Symbol Index",
+        "category": "GAS"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "gas.assemble",
+          "when": "editorLangId == gas"
+        },
+        {
+          "command": "gas.build",
+          "when": "editorLangId == gas"
+        },
+        {
+          "command": "gas.run",
+          "when": "editorLangId == gas"
+        },
+        {
+          "command": "gas.disassemble",
+          "when": "editorLangId == gas"
+        },
+        {
+          "command": "gas.insertSyscall",
+          "when": "editorLangId == gas"
+        },
+        {
+          "command": "gas.lintNow",
+          "when": "editorLangId == gas"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "gas.lookupInstruction",
+          "when": "editorLangId == gas",
+          "group": "gas@1"
+        },
+        {
+          "command": "gas.disassemble",
+          "when": "editorLangId == gas",
+          "group": "gas@2"
+        }
+      ],
+      "editor/title/run": [
+        {
+          "command": "gas.run",
+          "when": "editorLangId == gas",
+          "group": "navigation@1"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "GNU Assembler (x86-64)",
+      "properties": {
+        "gas.assembler.path": {
+          "type": "string",
+          "default": "as",
+          "description": "Path to the GNU assembler executable."
+        },
+        "gas.assembler.args": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "--64"
+          ],
+          "description": "Extra arguments passed to `as` (for diagnostics and builds). Example: [\"--64\", \"-g\", \"--defsym\", \"DEBUG=1\"]."
+        },
+        "gas.preprocessor.path": {
+          "type": "string",
+          "default": "gcc",
+          "description": "Compiler driver used for files with an upper-case `.S` extension, which need the C preprocessor (`gcc -x assembler-with-cpp`)."
+        },
+        "gas.preprocessor.args": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Extra arguments passed to the preprocessor driver for `.S` files (for example -D defines)."
+        },
+        "gas.linker.path": {
+          "type": "string",
+          "default": "ld",
+          "description": "Linker executable used by 'Assemble and Link'. Set to `gcc` to link against libc (e.g. programs that define `main`)."
+        },
+        "gas.linker.args": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Extra arguments passed to the linker. Example with ld: [\"-lc\", \"--dynamic-linker=/lib64/ld-linux-x86-64.so.2\"]. Example with gcc: [\"-no-pie\"]."
+        },
+        "gas.objdump.path": {
+          "type": "string",
+          "default": "objdump",
+          "description": "Path to objdump, used by 'Show Disassembly'."
+        },
+        "gas.objdump.args": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "-d",
+            "-r",
+            "-M",
+            "att"
+          ],
+          "description": "Arguments passed to objdump before the object file."
+        },
+        "gas.build.outputDirectory": {
+          "type": "string",
+          "default": "${fileDirname}/build",
+          "description": "Where object files and executables are written. Supports ${workspaceFolder}, ${fileDirname} and ${fileBasenameNoExtension}."
+        },
+        "gas.includePaths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Extra include directories (passed as -I) and used to resolve .include / #include links."
+        },
+        "gas.lint.enable": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable built-in static checks (unbalanced blocks, duplicate labels, undefined local labels, operand-size problems, AT&T syntax slips)."
+        },
+        "gas.lint.assembler": {
+          "type": "string",
+          "enum": [
+            "off",
+            "onSave",
+            "onType"
+          ],
+          "default": "onSave",
+          "enumDescriptions": [
+            "Never run the assembler for diagnostics.",
+            "Run `as` when a file is opened or saved and show its errors inline.",
+            "Run `as` while typing (debounced). Uses the unsaved buffer."
+          ],
+          "description": "Run the real assembler to produce authoritative diagnostics."
+        },
+        "gas.lint.unknownDirectives": {
+          "type": "boolean",
+          "default": true,
+          "description": "Warn about directives that are not in the extension's directive list."
+        },
+        "gas.lint.unknownInstructions": {
+          "type": "boolean",
+          "default": false,
+          "description": "Warn about mnemonics that are not in the extension's instruction database (the database does not cover every AVX-512 variant, so this is off by default)."
+        },
+        "gas.lint.undefinedSymbols": {
+          "type": "boolean",
+          "default": false,
+          "description": "Report symbols that are used but defined nowhere in the workspace (they will have to come from another object file or library)."
+        },
+        "gas.format.useTabs": {
+          "type": "boolean",
+          "default": false,
+          "description": "Indent instructions with a tab instead of spaces."
+        },
+        "gas.format.indentSize": {
+          "type": "number",
+          "default": 4,
+          "minimum": 1,
+          "maximum": 16,
+          "description": "Instruction indentation in columns (also the tab width used for alignment)."
+        },
+        "gas.format.mnemonicWidth": {
+          "type": "number",
+          "default": 8,
+          "minimum": 1,
+          "maximum": 24,
+          "description": "Pad mnemonics/directives to this width so operands line up."
+        },
+        "gas.format.commentColumn": {
+          "type": "number",
+          "default": 40,
+          "minimum": 0,
+          "description": "Column at which trailing comments are aligned. 0 keeps a single space before the comment."
+        },
+        "gas.format.indentDirectives": {
+          "type": "boolean",
+          "default": true,
+          "description": "Indent directives such as .globl and .quad like instructions."
+        },
+        "gas.format.mnemonicCase": {
+          "type": "string",
+          "enum": [
+            "preserve",
+            "lower",
+            "upper"
+          ],
+          "default": "preserve",
+          "description": "Case conversion applied to known instruction mnemonics."
+        },
+        "gas.outline.showLocalLabels": {
+          "type": "boolean",
+          "default": false,
+          "description": "Show `.L` labels and numeric labels in the outline and breadcrumbs."
+        },
+        "gas.hover.showSyscalls": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show Linux syscall names when hovering `syscall` and the number loaded into %rax."
+        },
+        "gas.workspace.include": {
+          "type": "string",
+          "default": "**/*.{s,S,inc,gas}",
+          "description": "Glob of files indexed for cross-file go-to-definition, references, rename and workspace symbols."
+        },
+        "gas.workspace.exclude": {
+          "type": "string",
+          "default": "**/{node_modules,.git,build,out}/**",
+          "description": "Glob of files excluded from the workspace index."
+        },
+        "gas.workspace.maxFiles": {
+          "type": "number",
+          "default": 2000,
+          "description": "Maximum number of files to index."
+        }
+      }
+    }
+  }
+}
