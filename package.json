@@ -5,7 +5,7 @@
   "version": "1.0.1",
   "icon": "images/gas.png",
   "publisher": "gas-tools",
-  "license": "MIT",
+  "license": "GPL-2.0-only",
   "engines": {
     "vscode": "^1.80.0"
   },
